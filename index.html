@@ -83,20 +83,22 @@ function show(){
  });
  document.getElementById("result").innerText="Choose the correct answer!";
 }
+
 function check(x){
  let a=animals[current];
  if(x===a[1]){
- score++;JavaScriptif(score >= 100){
- document.getElementById("result").innerText="🏆 YOU WIN! 100 POINTS!";
- }
-document.getElementById("result").innerText="🎉 Correct! Very Good!";
- document.getElementById("score").innerText=score;
- document.getElementById("result").innerText="🎉 Correct! Very Good!";
+   score += 10;
+   document.getElementById("score").innerText=score;
+   if(score >= 100){
+     document.getElementById("result").innerText="🏆 YOU WIN! 100 POINTS!";
+   }else{
+     document.getElementById("result").innerText="🎉 Correct! Very Good!";
+   }
  }else{
- document.getElementById("result").innerText="😊 Try again!";
+   document.getElementById("result").innerText="😊 Try again!";
  }
 }
-function next(){
+  
  current=(current+1)%animals.length;
  show();
 }
