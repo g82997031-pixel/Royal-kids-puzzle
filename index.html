@@ -93,6 +93,23 @@ function next(){
  show();
 }
 show();
-</script>
+</script><script>
+document.querySelectorAll('img').forEach(img => {
+  img.addEventListener('click', () => {
+    const sounds = {
+      dog: '🐶',
+      cat: '🐱',
+      elephant: '🐘'
+    };
+    const name = img.alt.toLowerCase();
+    const emoji = Object.keys(sounds).find(k => name.includes(k));
+    if (emoji) {
+      const speech = new SpeechSynthesisUtterance(emoji);
+      speech.lang = 'en-US';
+      speechSynthesis.speak(speech);
+    }
+  });
+});
+                       </script>
 </body>
 </html>
