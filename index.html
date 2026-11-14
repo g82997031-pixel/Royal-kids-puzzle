@@ -81,7 +81,10 @@ function show(){
 function check(x){
  let a=animals[current];
  if(x===a[1]){
- score++;
+ score++;JavaScriptif(score >= 100){
+ document.getElementById("result").innerText="🏆 YOU WIN! 100 POINTS!";
+ }
+document.getElementById("result").innerText="🎉 Correct! Very Good!";
  document.getElementById("score").innerText=score;
  document.getElementById("result").innerText="🎉 Correct! Very Good!";
  }else{
