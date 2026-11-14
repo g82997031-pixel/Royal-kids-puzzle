@@ -22,13 +22,14 @@ h1{color:#ffd700;text-shadow:0 0 12px orange}
 button{
  display:block;width:100%;padding:14px;
  margin:9px 0;border:2px solid #b8860b;
- border-radius:14px;background:linear-gradient(90deg,#ffd700,#ffef9a);
+ border-radius:14px;
+ background:linear-gradient(90deg,#ffd700,#ffef9a);
  color:#401050;font-size:19px;font-weight:bold;
 }
 button:active{transform:scale(.97)}
-#result{font-size:21px;font-weight:bold}
-#win{display:none}
+#result{font-size:20px;font-weight:bold}
 .small{font-size:14px}
+.hidden{display:none}
 </style>
 </head>
 <body>
@@ -37,28 +38,42 @@ button:active{transform:scale(.97)}
 <h3>Welcome Kids!</h3>
 <p>Let's Play and Learn!</p>
 
-<div class="game" id="game">
-<h2>🐾 Animal Puzzle</h2>
-<p>Which animal is this?</p>
+<!-- HOME MENU -->
+<div class="game" id="home">
+<h2>🎮 Choose Your Puzzle</h2>
+<button onclick="startGame('animal')">🐘 Animal Puzzle</button>
+<button onclick="startGame('bus')">🚌 Bus Puzzle</button>
+<button onclick="startGame('vehicle')">🚗 Vehicle Puzzle</button>
+<p>⭐ Three Fun Games in One App!</p>
+</div>
+
+<!-- GAME SCREEN -->
+<div class="game hidden" id="game">
+<h2 id="gameTitle"></h2>
+<p>Which one is this?</p>
 <div class="animal" id="animal">🐘</div>
 <p>Choose the correct answer!</p>
 <div id="answers"></div>
 <h3 id="score">⭐ Score: 0</h3>
-<p id="progress">Question 1 / 50</p>
+<p id="progress"></p>
 <p id="result">Good Luck Kids!</p>
 <button onclick="next()">Next ➡️</button>
-<p class="small">👑 Royal Kids Learning Game</p>
+<button onclick="goHome()">🏠 Home</button>
 </div>
 
-<div class="game" id="win">
+<!-- WIN SCREEN -->
+<div class="game hidden" id="win">
 <h1>🏆 YOU WIN! 🏆</h1>
 <div style="font-size:85px">👑🎉🥇</div>
 <h2>Congratulations!</h2>
-<h2 id="finalScore">⭐ 100 POINTS ⭐</h2>
+<h2 id="finalScore"></h2>
 <button onclick="playAgain()">🔄 PLAY AGAIN</button>
+<button onclick="goHome()">🏠 HOME</button>
 </div>
 
 <script>
+
+// ANIMAL PUZZLE - 50 QUESTIONS
 const animals=[
 ["🐘","Elephant"],["🦁","Lion"],["🐯","Tiger"],
 ["🐵","Monkey"],["🐶","Dog"],["🐱","Cat"],
@@ -79,14 +94,69 @@ const animals=[
 ["🦩","Flamingo"]
 ];
 
+// BUS PUZZLE - 50 QUESTIONS
+const busNames=[
+"City Bus","School Bus","Mini Bus","Double Decker Bus",
+"Electric Bus","Tourist Bus","Luxury Bus","Sleeper Bus",
+"Volvo Bus","Public Bus","Airport Bus","Shuttle Bus",
+"Express Bus","Local Bus","Articulated Bus","Trolley Bus",
+"Coach Bus","Transit Bus","Hybrid Bus","Mini Coach",
+"Intercity Bus","Night Bus","Open Top Bus","Safari Bus",
+"Prison Bus","Party Bus","Charter Bus","Rapid Bus",
+"Campus Bus","Metro Feeder Bus","Low Floor Bus","Diesel Bus",
+"Hydrogen Bus","Airport Shuttle","Tour Coach","City Express",
+"School Mini Bus","Long Distance Bus","Double Decker Coach",
+"Electric School Bus","Tourist Coach","Sleeper Coach",
+"Mini Tourist Bus","Public Transport Bus","Articulated Coach",
+"City Shuttle","Luxury Coach","Open Roof Bus",
+"Interstate Bus","Community Bus"
+];
+
+const busIcons=["🚌","🚍","🚎","🚐"];
+
+const buses=busNames.map((name,i)=>[
+ busIcons[i%busIcons.length],name
+]);
+
+// VEHICLE PUZZLE - 50 QUESTIONS
+const vehicleNames=[
+"Car","Taxi","Jeep","SUV","Sports Car",
+"Race Car","Police Car","Ambulance","Fire Engine","Truck",
+"Pickup Truck","Van","Minivan","Tractor","Bulldozer",
+"Excavator","Crane","Motorcycle","Scooter","Bicycle",
+"Electric Scooter","Auto Rickshaw","Cycle Rickshaw","Go Kart",
+"Dump Truck","Tow Truck","Garbage Truck","Cement Mixer",
+"Delivery Van","Monster Truck","Formula Racing Car",
+"Convertible Car","Limousine","Vintage Car","Golf Cart",
+"Forklift","Road Roller","Tank","ATV","Snowmobile",
+"Caravan","Motorhome","Trailer Truck","Flatbed Truck",
+"Water Tanker","Fuel Tanker","Ice Cream Van",
+"Food Truck","Electric Car","Horse Cart"
+];
+
+const vehicleIcons=[
+"🚗","🚕","🚙","🏎️","🚓","🚑","🚒","🚚",
+"🚛","🚜","🏍️","🛵","🚲","🛺","🚐"
+];
+
+const vehicles=vehicleNames.map((name,i)=>[
+ vehicleIcons[i%vehicleIcons.length],name
+]);
+
 let current=0;
 let score=0;
 let answered=false;
 let questions=[];
+let selectedGame="animal";
+let gameData={};
+
+gameData.animal=animals;
+gameData.bus=buses;
+gameData.vehicle=vehicles;
 
 function sound(frequency){
  try{
- let ctx=new (window.AudioContext||window.webkitAudioContext)();
+ let ctx=new(window.AudioContext||window.webkitAudioContext)();
  let osc=ctx.createOscillator();
  let gain=ctx.createGain();
  osc.connect(gain);
@@ -103,26 +173,42 @@ function shuffle(arr){
  return [...arr].sort(()=>Math.random()-.5);
 }
 
-function startGame(){
- questions=shuffle(animals);
+function startGame(type){
+ selectedGame=type;
+ questions=shuffle(gameData[type]);
  current=0;
  score=0;
+
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("win").classList.add("hidden");
+ document.getElementById("game").classList.remove("hidden");
+
+ let titles={
+ animal:"🐾 Animal Puzzle",
+ bus:"🚌 Bus Puzzle",
+ vehicle:"🚗 Vehicle Puzzle"
+ };
+
+ document.getElementById("gameTitle").innerText=titles[type];
  document.getElementById("score").innerText="⭐ Score: 0";
- document.getElementById("game").style.display="block";
- document.getElementById("win").style.display="none";
  show();
 }
 
 function show(){
  let a=questions[current];
+
  document.getElementById("animal").innerText=a[0];
  document.getElementById("answers").innerHTML="";
  document.getElementById("result").innerText="Choose your answer!";
  document.getElementById("progress").innerText=
- "Question "+(current+1)+" / 50";
+ "Question "+(current+1)+" / "+questions.length;
+
  answered=false;
 
- let wrong=shuffle(animals.filter(x=>x[1]!==a[1])).slice(0,3);
+ let wrong=shuffle(
+ questions.filter(x=>x[1]!==a[1])
+ ).slice(0,3);
+
  let choices=shuffle([a,...wrong]);
 
  choices.forEach(item=>{
@@ -139,7 +225,8 @@ function check(choice){
 
  if(choice===questions[current][1]){
  score+=10;
- document.getElementById("result").innerText="🎉 Correct! Very Good!";
+ document.getElementById("result").innerText=
+ "🎉 Correct! Very Good!";
  sound(800);
  }else{
  document.getElementById("result").innerText=
@@ -147,34 +234,46 @@ function check(choice){
  sound(200);
  }
 
- document.getElementById("score").innerText="⭐ Score: "+score;
+ document.getElementById("score").innerText=
+ "⭐ Score: "+score;
 
- if(score>=100){
- setTimeout(()=>{
- document.getElementById("game").style.display="none";
- document.getElementById("win").style.display="block";
- document.getElementById("finalScore").innerText=
- "⭐ Your Score: "+score;
- sound(1000);
- },400);
- }
 }
 
 function next(){
- if(current<49){
+ if(!answered){
+ document.getElementById("result").innerText=
+ "⚠️ Please choose an answer first!";
+ return;
+ }
+
+ if(current<questions.length-1){
  current++;
  show();
  }else{
- document.getElementById("result").innerText=
- "🎉 All 50 questions completed!";
+ showWin();
  }
 }
 
-function playAgain(){
- startGame();
+function showWin(){
+ document.getElementById("game").classList.add("hidden");
+ document.getElementById("win").classList.remove("hidden");
+
+ document.getElementById("finalScore").innerText=
+ "⭐ Your Score: "+score+" / 500";
+
+ sound(1000);
 }
 
-startGame();
+function playAgain(){
+ startGame(selectedGame);
+}
+
+function goHome(){
+ document.getElementById("game").classList.add("hidden");
+ document.getElementById("win").classList.add("hidden");
+ document.getElementById("home").classList.remove("hidden");
+}
+
 </script>
 </body>
 </html>
