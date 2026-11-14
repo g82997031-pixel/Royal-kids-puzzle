@@ -6,35 +6,35 @@
 <title>ROYAL KIDS PUZZLE</title>
 <style>
 body {
-  text-align:center;
-  background:linear-gradient(135deg,#17002e,#5b168b);
-  color:white;
-  font-family:Arial;
-  padding:15px;
+ background:linear-gradient(135deg,#18002e,#68139b);
+ color:white;
+ text-align:center;
+ font-family:Arial;
+ padding:15px;
 }
 h1 {color:gold;}
 .game {
-  background:#fff3cf;
-  color:#401050;
-  padding:20px;
-  border-radius:20px;
-  max-width:400px;
-  margin:auto;
+ background:#fff2ce;
+ color:#401050;
+ padding:20px;
+ border-radius:20px;
+ max-width:400px;
+ margin:auto;
 }
-.animal {font-size:100px;margin:20px;}
+.animal {font-size:100px;margin:15px;}
 button {
-  background:gold;
-  color:#321047;
-  border:2px solid #fff;
-  padding:14px;
-  margin:7px;
-  border-radius:12px;
-  font-size:19px;
-  font-weight:bold;
-  width:85%;
+ background:gold;
+ color:#321047;
+ border:2px solid white;
+ padding:14px;
+ margin:7px;
+ border-radius:12px;
+ font-size:18px;
+ font-weight:bold;
+ width:90%;
 }
-button:active {background:orange;}
 #result {font-size:22px;font-weight:bold;}
+#win {display:none;}
 </style>
 </head>
 <body>
@@ -43,24 +43,27 @@ button:active {background:orange;}
 <h3>Welcome Kids!</h3>
 <p>Let's Play and Learn!</p>
 
-<div class="game">
+<div class="game" id="game">
 <h2>🐾 Animal Puzzle</h2>
 <p>Which animal is this?</p>
-
 <div class="animal" id="animal">🐘</div>
-
 <p>Choose the correct answer!</p>
-
 <div id="answers"></div>
-
 <h3 id="score">⭐ Score: 0</h3>
 <p id="result">Good Luck Kids!</p>
-
 <button onclick="next()">Next ➡️</button>
 </div>
 
+<div class="game" id="win">
+<h1>🏆 YOU WIN! 🏆</h1>
+<div style="font-size:80px">👑🎉🥇</div>
+<h2>Congratulations!</h2>
+<h2>⭐ 100 POINTS ⭐</h2>
+<button onclick="playAgain()">🔄 PLAY AGAIN</button>
+</div>
+
 <script>
-let animals = [
+let animals=[
 ["🐘","Elephant","Tiger","Lion","Dog"],
 ["🦁","Lion","Cat","Cow","Horse"],
 ["🐯","Tiger","Dog","Elephant","Goat"],
@@ -82,35 +85,48 @@ let a=animals[current];
 document.getElementById("animal").innerText=a[0];
 document.getElementById("answers").innerHTML="";
 document.getElementById("result").innerText="Choose your answer!";
+answered=false;
 
-a.slice(1).sort(()=>Math.random()-0.5).forEach(choice=>{
+let choices=a.slice(1).sort(()=>Math.random()-0.5);
+choices.forEach(choice=>{
 let b=document.createElement("button");
 b.innerText=choice;
 b.onclick=()=>check(choice);
 document.getElementById("answers").appendChild(b);
 });
-answered=false;
 }
 
 function check(choice){
 if(answered)return;
 answered=true;
+
 if(choice===animals[current][1]){
 score+=10;
 document.getElementById("result").innerText="🎉 Correct! Very Good!";
 }else{
 document.getElementById("result").innerText=
-"❌ Try again next time! Answer: "+animals[current][1];
+"❌ Correct answer: "+animals[current][1];
 }
+
 document.getElementById("score").innerText="⭐ Score: "+score;
 
 if(score>=100){
-document.getElementById("result").innerText="🏆 YOU WIN! 100 POINTS!";
+document.getElementById("game").style.display="none";
+document.getElementById("win").style.display="block";
 }
 }
 
 function next(){
 current=(current+1)%animals.length;
+show();
+}
+
+function playAgain(){
+score=0;
+current=0;
+document.getElementById("score").innerText="⭐ Score: 0";
+document.getElementById("win").style.display="none";
+document.getElementById("game").style.display="block";
 show();
 }
 
