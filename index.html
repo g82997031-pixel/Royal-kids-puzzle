@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>ROYAL KIDS PUZZLE</title>
-</head>
-<body>
-<h1>👑 ROYAL KIDS PUZZLE</h1>
-<h2>Welcome Kids!</h2>
-<p>Let's Play and Learn!</p>
-</body>
-</html>
-
+ 
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,108 +7,115 @@
 <style>
 body {
   text-align:center;
-  background:linear-gradient(135deg,#160b38,#54208b);
+  background:linear-gradient(135deg,#17002e,#5b168b);
   color:white;
   font-family:Arial;
-  padding:20px;
+  padding:15px;
 }
 h1 {color:gold;}
-.card {
-  background:white;
-  color:#32105b;
+.game {
+  background:#fff3cf;
+  color:#401050;
   padding:20px;
   border-radius:20px;
-  max-width:350px;
+  max-width:400px;
   margin:auto;
 }
-.animal {font-size:75px;}
+.animal {font-size:100px;margin:20px;}
 button {
-  padding:15px;
-  margin:7px;
-  border:0;
-  border-radius:12px;
   background:gold;
-  font-size:20px;
+  color:#321047;
+  border:2px solid #fff;
+  padding:14px;
+  margin:7px;
+  border-radius:12px;
+  font-size:19px;
   font-weight:bold;
+  width:85%;
 }
-#result {font-size:22px;color:green;}
+button:active {background:orange;}
+#result {font-size:22px;font-weight:bold;}
 </style>
 </head>
 <body>
+
 <h1>👑 ROYAL KIDS PUZZLE 👑</h1>
+<h3>Welcome Kids!</h3>
+<p>Let's Play and Learn!</p>
+
+<div class="game">
 <h2>🐾 Animal Puzzle</h2>
-<div class="card">
-<h2>Which animal is this?</h2>
+<p>Which animal is this?</p>
+
 <div class="animal" id="animal">🐘</div>
-<div id="options"></div>
-<p id="result">Choose the correct answer!</p>
-<h3>⭐ Score: <span id="score">0</span></h3>
+
+<p>Choose the correct answer!</p>
+
+<div id="answers"></div>
+
+<h3 id="score">⭐ Score: 0</h3>
+<p id="result">Good Luck Kids!</p>
+
 <button onclick="next()">Next ➡️</button>
 </div>
+
 <script>
-let animals=[
-["🐘","Elephant","Tiger","Lion"],
-["🦁","Lion","Dog","Cat"],
-["🐯","Tiger","Elephant","Cow"],
-["🐶","Dog","Lion","Monkey"],
-["🐱","Cat","Tiger","Dog"],
-["🐵","Monkey","Cow","Elephant"],
-["🐮","Cow","Cat","Dog"],
-["🐰","Rabbit","Lion","Tiger"],
-["🐻","Bear","Elephant","Cat"],
-["🦊","Fox","Dog","Cow"]
+let animals = [
+["🐘","Elephant","Tiger","Lion","Dog"],
+["🦁","Lion","Cat","Cow","Horse"],
+["🐯","Tiger","Dog","Elephant","Goat"],
+["🐵","Monkey","Lion","Cow","Cat"],
+["🐶","Dog","Tiger","Goat","Elephant"],
+["🐱","Cat","Horse","Lion","Monkey"],
+["🐮","Cow","Dog","Tiger","Lion"],
+["🐰","Rabbit","Elephant","Cat","Horse"],
+["🐴","Horse","Monkey","Dog","Cow"],
+["🐼","Panda","Lion","Tiger","Cat"]
 ];
-  
-let current=0,score=0;
+
+let current=0;
+let score=0;
+let answered=false;
+
 function show(){
- let a=animals[current];
- document.getElementById("animal").innerText=a[0];
- document.getElementById("options").innerHTML="";
- [a[1],a[2],a[3]].sort(()=>Math.random()-.5).forEach(x=>{
- let b=document.createElement("button");
- b.innerText=x;
- b.onclick=()=>check(x);
- document.getElementById("options").appendChild(b);
- });
- document.getElementById("result").innerText="Choose the correct answer!";
+let a=animals[current];
+document.getElementById("animal").innerText=a[0];
+document.getElementById("answers").innerHTML="";
+document.getElementById("result").innerText="Choose your answer!";
+
+a.slice(1).sort(()=>Math.random()-0.5).forEach(choice=>{
+let b=document.createElement("button");
+b.innerText=choice;
+b.onclick=()=>check(choice);
+document.getElementById("answers").appendChild(b);
+});
+answered=false;
 }
 
-function check(x){
- let a=animals[current];
- if(x===a[1]){
-   score += 10;
-   document.getElementById("score").innerText=score;
-   if(score >= 100){
-     document.getElementById("result").innerText="🏆 YOU WIN! 100 POINTS!";
-   }else{
-     document.getElementById("result").innerText="🎉 Correct! Very Good!";
-   }
- }else{
-   document.getElementById("result").innerText="😊 Try again!";
- }
+function check(choice){
+if(answered)return;
+answered=true;
+if(choice===animals[current][1]){
+score+=10;
+document.getElementById("result").innerText="🎉 Correct! Very Good!";
+}else{
+document.getElementById("result").innerText=
+"❌ Try again next time! Answer: "+animals[current][1];
 }
-  
- current=(current+1)%animals.length;
- show();
+document.getElementById("score").innerText="⭐ Score: "+score;
+
+if(score>=100){
+document.getElementById("result").innerText="🏆 YOU WIN! 100 POINTS!";
 }
+}
+
+function next(){
+current=(current+1)%animals.length;
 show();
-</script><script>
-document.querySelectorAll('img').forEach(img => {
-  img.addEventListener('click', () => {
-    const sounds = {
-      dog: '🐶',
-      cat: '🐱',
-      elephant: '🐘'
-    };
-    const name = img.alt.toLowerCase();
-    const emoji = Object.keys(sounds).find(k => name.includes(k));
-    if (emoji) {
-      const speech = new SpeechSynthesisUtterance(emoji);
-      speech.lang = 'en-US';
-      speechSynthesis.speak(speech);
-    }
-  });
-});
-                       </script>
+}
+
+show();
+</script>
+
 </body>
 </html>
